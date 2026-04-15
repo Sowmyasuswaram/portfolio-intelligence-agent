@@ -2,6 +2,16 @@ import streamlit as st
 import sys
 import os
 
+# Auto-build database if it doesn't exist
+if not os.path.exists("database/portfolio.duckdb"):
+    os.makedirs("database", exist_ok=True)
+    os.makedirs("data/raw", exist_ok=True)
+    os.makedirs("data/processed", exist_ok=True)
+    with st.spinner("Setting up database for first time... (2 minutes)"):
+        import subprocess
+        subprocess.run([sys.executable, "pipelines/ingest.py"])
+        subprocess.run([sys.executable, "pipelines/transform.py"])
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'agent'))
 from agent import run_agent
 
